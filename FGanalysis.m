@@ -104,6 +104,12 @@ disp([newline, 'Mean and SD of RT for each block:', newline]);
 disp(T);
 
 
+%% For the different stimulus / trial types, here is a hint:
+
+figPresent = cell2mat(logVar(2:end, 7));
+RT_block1_figPresent = RT_all(blockIndices==1 & figPresent==1);
+
+
 
 
 
