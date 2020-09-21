@@ -37,10 +37,14 @@ disp(['Mean for all blocks: ', num2str(avrg_all), ' STD for all blocks: ', num2s
 % sum = data_all{1,11};
 % count = 1;
 % currentBlock = data_all{1,1}; %
-for i = 2:size(data_all)
-    if data_all{i,1} == currentBlock
-        sum = sum + data_all{i,11};
-        count = count + 1;
+
+
+
+% Look into logical indexing - could it be used instead of a for loop here?
+for i = 2:size(data_all)  % size(data_all) returns a 2-element vector?
+    if data_all{i,1} == currentBlock  % the role of the if-else is unclear
+        sum = sum + data_all{i,11};  % define the var first + check for built-ins whenever using simple var names
+        count = count + 1;  % check for built-ins whenever using simple var names
     else
         disp(['block number: ', num2str(currentBlock), ' RT mean: ', num2str(sum/count), ' STD: ', num2str(std(sum/count))]);
         currentBlock = data_all{i, 1};
