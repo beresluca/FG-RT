@@ -58,7 +58,7 @@ disp(T);
 %% For the different stimulus / trial types, here is a hint:
 
 figPresent = cell2mat(logVar(2:end, 7));
-RT_block_figPresent = RT_all(blockIndices==i & figPresent==1);
+% RT_block_figPresent = RT_all(blockIndices==i & figPresent==1);
 
 % getting the different stimulus types (figure present or absent) 
 RT_all_figPresent = RT_all(figPresent==1);
@@ -169,4 +169,74 @@ disp(['  SD RT per blocks: ', num2str(sd_easyRT)]);
 %% When trial type is difficult and figure is present (??)
 
 %RT_figPresent_Difficult = zeros()
+
+
+
+
+
+%% Hints for putting things together - Adam
+% 
+% It is all very good so far!
+%
+% The next task should be to combine all of the above :)
+% Ideally, we'd like to have a numeric array sized [20, 10, 2, 2]
+% containing all RT data sorted according to blocks and the two independent
+% factors (figure present/absent and difficult/easy).
+% 
+% Approximate structure of the code:
+
+
+%% (1) basics - loading data, extracting variables of interest, preallocating results array
+
+load sub2Log.mat;
+RT_all = cell2mat(logVar(2:end,12));
+blockIndices = cell2mat(logVar(2:end, 2));
+figPresent = cell2mat(logVar(2:end, 7));  % binary vector
+stim_difficulty = cell2mat(logVar(2:end,5));
+
+% somehow extract the easy-difficult distinction in a general way:
+diffValues = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; 
+isDifficult = stim_difficulty==diffValues(2);  % binary vector
+
+% what will our results look like
+subRT = nan(20, 10, 2, 2);
+
+
+%% (2) sort RTs into categories, store it in output variable
+
+for blockIdx = 1:10
+    
+    for fig = 0:1
+        
+        for diff = 0:1
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %% challenge! what comes here?  %%%%%%
+            
+            subRT(:, blockIdx, fig, diff) = ;
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+        end
+        
+    end
+    
+end
+
+
+%% (3) optional - report some basic stuff: 
+% mean & SD of RT for the 2 X 2 structure for the overall task (all blocks combined)
+% mean & SD of RT for the 2 X 2 structure per block
+
+
+
+%% (4) think a bit about our assumptions about the input data
+% define a few sanity checks!
+
+
+
+
+
+
+
 
