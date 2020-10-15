@@ -1,11 +1,13 @@
 %% (1) basics - loading data, extracting variables of interest, preallocating results array
 
+fileS = 'C:\Users\Luca\Documents\mta-ttk anyagok\FG-RT\sampleData\sub2Log.mat';
 fileP = '/home/adamb/FG-RT/sampleData/sub2Log.mat';
-load(fileP);
+load(fileS);
 RT_all = cell2mat(logVar(2:end,12));
 blockIndices = cell2mat(logVar(2:end, 2));
 figPresent = cell2mat(logVar(2:end, 7));  % binary vector
 stim_difficulty = cell2mat(logVar(2:end,5));
+accuracy = cell2mat(logVar(2:end,10));
 
 % somehow extract the easy-difficult distinction in a general way:
 diffValues = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; 
@@ -47,12 +49,12 @@ subRT_types = nan(200, 2, 2);
  subRTreshaped = reshape(subRT, [200, 2, 2]);  % elements of input are taken columnwise, working out nicely in our case
  % check if the result is really the same as with the nested for loops
  % above
-tmp = isequal(subRT_types, subRTreshaped);
-if tmp
-    disp('The two methods for merging block-level data yielded the same results');
-else
-    disp('The two methods for merging block-level data yielded different results!');
-end
+% tmp = isequal(subRT_types, subRTreshaped);
+% if tmp
+%     disp('The two methods for merging block-level data yielded the same results');
+% else
+%     disp('The two methods for merging block-level data yielded different results!');
+% end
 
 % get mean and SD for RT per condition
 mean_stmType = mean(subRT_types, 'omitnan');  % if there is even one NaN value, the result would be NaN, so we use the "omitnan" flag
@@ -61,6 +63,10 @@ sd_stmType = std(subRT_types, 'omitnan');
 
 
 % For me the line below gives a 2x2x2 matrix - was that the intention?
+
+%%%%%%%% if subRT_types is 4D, Mean_SD_stmType gives also a 4D, only
+%%%%%%%% created 4D for readability issues --> 2x2x2 matrix separates only
+%%%%%%%% by difficulty (:,:,1) or (:,:,2)
 
 % first row mean, second row SD
 Mean_SD_stmType = vertcat(mean_stmType, sd_stmType);
@@ -72,27 +78,6 @@ Mean_SD_stmType = vertcat(mean_stmType, sd_stmType);
 
 mean_RT = mean(subRT(:), 'omitnan'); % omit NAN values
 sd_RT = std(subRT(:), 'omitnan'); 
-
-% Means & SD arranged in a 4D matrix
-
-mean_RT_blocks = nan(1,10);
-sd_RT_blocks = nan(1,10);
-
-for blockIdx = 1:10
-    
-    for fig = 0:1
-        
-        for diff = 0:1
-            
-            mean_RT_blocks(:, blockIdx, fig +1, diff +1) = mean(subRT(:, blockIdx, fig +1, diff +1), 'omitnan');
-            sd_RT_blocks(:, blockIdx, fig +1, diff +1) = std(subRT(:, blockIdx, fig +1, diff +1), 'omitnan');
-           
-        end
-    end
-end
-
-% first row = mean, second row = sd
-Mean_SD_blocks = vertcat(mean_RT_blocks, sd_RT_blocks);
 
 
 %%%%%%%%%%%%% adam's comments here %%%%%%%%%%%%%
@@ -110,15 +95,25 @@ RTblockSD = std(subRT, 0, 1, 'omitnan');  % std along first dimension - Note the
 
 % Now we can check if we get the same result as you had above:
 RTblockMeanSD = vertcat(RTblockMean, RTblockSD);
-tmp = isequal(RTblockMeanSD, Mean_SD_blocks);  % check equality
-if tmp
-    disp('The two methods for obtaining block-level RT mean and SD yielded the same results');
-else
-    disp('The two methods for obtaining block-level RT mean and SD yielded different results!');
-end
+% tmp = isequal(RTblockMeanSD, Mean_SD_blocks);  % check equality
+% if tmp
+%     disp('The two methods for obtaining block-level RT mean and SD yielded the same results');
+% else
+%     disp('The two methods for obtaining block-level RT mean and SD yielded different results!');
+% end
 
 %%%%%%%%%%%%% adam's comments ended %%%%%%%%%%%%
+
+%% accuracy data - do we need hit/miss, false alarm/correct rejection rates?
  
+Num_acc = numel(accuracy(accuracy==1));
+proportion_acc = Num_acc/800*100;
+
+mean_acc = mean(RT_all(accuracy==1));
+sd_acc = std(RT_all(accuracy==1));
+mean_inacc = mean(RT_all(accuracy==0));
+sd_inacc = std(RT_all(accuracy==0));
+
 
 %% Mean and SD per blocks (1-10) and overall by stimlus type (11th column) 
 
@@ -126,20 +121,16 @@ end
 % The line below doesn't work for me
 %%%%%%%%%%%%% adam's comments ended %%%%%%%%%%%%
 
-Behav_all = horzcat(Mean_SD_blocks, Mean_SD_stmType);
+%%%%%% it only works if Mean_SD_stmType is also a 4D matrix, it matches in
+%%%%%% size (not at all neccessary though)
 
-% disp([newline 'Mean RT: ', num2str(mean_RT)]);
-% disp([newline '  SD RT: ', num2str(sd_RT)]);
-% 
-% disp([newline 'Mean & SD per blocks']);
-% disp(Mean_SD_blocks);
+% Behav_all = horzcat(Mean_SD_blocks, Mean_SD_stmType);
 
 
 %% Plots
 % per blocks and stimulus type 
 
 figure(1)
-
 hold on 
 for fig = 0:1
    
@@ -153,11 +144,6 @@ end
 legend('fig absent / easy', 'figure absent / diff', 'figure present / easy', 'figure present / diff');
 xlabel('Block no.');
 ylabel('Mean RT (ms)');
-
-figure(2)
-bar(mean_stmType(:));
-% need to add labels 
-
 
 %%%%%%%%%%%%% adam's comments here %%%%%%%%%%%%%
 % For the bar graph:
@@ -176,15 +162,9 @@ set(gca,'XTickLabel', {'Easy', 'Difficult'});
 % add legend to specify Figure Absent / Present categories
 legend('Figure Absent', 'Figure Present');
 xlabel('Stimulus types');
-ylabel('Mean Rt (ms)');
+ylabel('Mean RT (ms)');
 
 %%%%%%%%%%%%% adam's comments ended %%%%%%%%%%%%
-
-
-
-
-
-
 
 
 
