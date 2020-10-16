@@ -104,8 +104,14 @@ RTblockMeanSD = vertcat(RTblockMean, RTblockSD);
 
 %%%%%%%%%%%%% adam's comments ended %%%%%%%%%%%%
 
+
 %% accuracy data - do we need hit/miss, false alarm/correct rejection rates?
- 
+
+%%%%%%%%%%%%% adam's comments here %%%%%%%%%%%%%
+% We should do the same with accuracy data as with RT - arrange it
+% according to blocks and conditions, then get means and SD
+%%%%%%%%%%%%% adam's comments ended %%%%%%%%%%%%
+
 Num_acc = numel(accuracy(accuracy==1));
 proportion_acc = Num_acc/800*100;
 
@@ -148,8 +154,8 @@ ylabel('Mean RT (ms)');
 %%%%%%%%%%%%% adam's comments here %%%%%%%%%%%%%
 % For the bar graph:
 % The bar graph could take as input a matrix and then it would group
-% conditions automatically, according to the matrix structure. And we turn
-% the var "mean_stmType" into a 2x2 matrix and just feed it to the bar()
+% conditions automatically, according to the matrix structure. So we can 
+% turn the var "mean_stmType" into a 2x2 matrix and just feed it to the bar()
 % function
 
 figure(2);
