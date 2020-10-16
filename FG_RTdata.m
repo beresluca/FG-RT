@@ -1,8 +1,13 @@
 %% (1) basics - loading data, extracting variables of interest, preallocating results array
 
-fileS = 'C:\Users\Luca\Documents\mta-ttk anyagok\FG-RT\sampleData\sub2Log.mat';
-fileP = '/home/adamb/FG-RT/sampleData/sub2Log.mat';
-load(fileS);
+subjectN = input('Enter subject number: ', 's');
+subjectN = str2double(subjectN);
+%fileS = 'C:\Users\Luca\Documents\mta-ttk anyagok\FG-RT\sampleData\sub2Log.mat';
+%fileP = '/home/adamb/FG-RT/sampleData/sub2Log.mat';
+%load(fileS);
+subID = sprintf('sub%dlog.mat', subjectN);
+load(subID);
+
 RT_all = cell2mat(logVar(2:end,12));
 blockIndices = cell2mat(logVar(2:end, 2));
 figPresent = cell2mat(logVar(2:end, 7));  % binary vector
