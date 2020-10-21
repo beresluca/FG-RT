@@ -20,7 +20,7 @@ function FGoutput = FGdata_clean(filename, plottingFlag)
 %
 %
 % Note: file should already be on MATLAB path! (?)
-
+% Remek!
 
 %% Check inputs
 
