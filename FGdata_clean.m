@@ -1,107 +1,137 @@
-%% %% %% %% SFG aging study - behavioral data analysis %% %% %% %%
+function FGoutput = FGdata_clean(filename, plottingFlag)
+%% Individual-level behavioral data analysis for SFG aging study
+%
+% USAGE: FGoutput = FGdata_clean(filename, plottingFlag)
 %
 % Function for getting all behavioral data (means and SDs for RT, accuracy)
+% from a given subject log file
 %
-% Only input arg should be filename, something like this: 'sub*Log.mat' where * = subject no. 
+% Mandatory input:
+% filename      - Char array, path of subject-level behavioral log file 
+%                  (usually in the form "sub*Log.mat" where * = subject no.).
 %
-% Note: file should already be on MATLAB path!
+% Optional input:
+% plottingFlag  - Numeric or logical value, one of [0 1]. Flag for plotting
+%                   the results (0 means no plots, 1 means plots for RT and
+%                   % Correct response). Defaults to 1. 
+%
+%
+% Outputs:
+%
+%
+% Note: file should already be on MATLAB path! (?)
+
+
+%% Check inputs
+
+% check number of inputs
+if ~ismember(nargin, [1 2]) 
+    error('Function FGdata_clean requires input arg "filename" while input arg "plottingFlag" is optional!');
+end
+% check mandatory input
+if ~exist(filename, 'file')
+    error('Input arg "filename" is not a valid file path!');
+end
+% check optional input
+if nargin == 1
+    plottingFlag = 1;
+elseif ~ismember(plottingFlag, [0 1])
+    error('Optional input arg "plottingFlag" should be one of [0 1] or logical!');
+end
 
 
 %% (1) Loading log file, extracting variables of interest
 
-function [FGoutput] = FGdata_clean(filename)
+% find the input file
+load(filename)
 
-    % find the input file
-    if exist (filename, 'file')
-        load(filename)
-    else
-        disp('Filename does not exist!')
-    end
-    
-    % get variables from logVar
-    RT_all          = cell2mat(logVar(2:end,12));
-    blockIndices 	= cell2mat(logVar(2:end, 2));
-    figPresent      = cell2mat(logVar(2:end, 7));  
-    stim_difficulty = cell2mat(logVar(2:end,5)); 
-    diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; % getting min and max values of coherence
-    isDifficult     = stim_difficulty==diffValues(2); 
-    accuracy        = cell2mat(logVar(2:end,10));
-
-    %% (2) sort RTs into categories, store it in output variable
-
-    % results array containing RT data
-    % - per blocks
-    % - per stimulus type (figure present/absent, easy/difficult)
-
-    subRT = nan(20, 10, 2, 2); 
-    % 3rd and 4th dimension representing figure presence (1=absent, 2=present)
-    % and difficulty (1=easy, 2=difficult)
-
-    for blockIdx = 1:10
-
-        for fig = 0:1
-
-            for diff = 0:1
-
-                subRT(:, blockIdx, fig+1, diff+1) = RT_all(blockIndices==blockIdx & figPresent==fig & isDifficult==diff);
-
-            end
-        end   
-    end
-
-    %% (3) Reporting descriptve stats for RT
-
-    % get overall mean and SD for RT (all blocks combined 1x1)
-    mean_RT = mean(subRT(:), 'omitnan'); % omit NAN values
-    sd_RT = std(subRT(:), 'omitnan');
-
-    % get mean RT per blocks, stimulus type (4D)
-    RTblockMean = mean(subRT, 1, 'omitnan');  
-    RTblockSD = std(subRT, 0, 1, 'omitnan');  
-
-    % first row: means, second row: SD (4D)
-    RTblockMeanSD = vertcat(RTblockMean, RTblockSD);
-
-    % block level removed to check stats only per stimulus type (3D)
-    % get mean and SD for RT per condition
-    subRTreshaped = reshape(subRT, [200, 2, 2]);  
-    mean_stmType = mean(subRTreshaped, 'omitnan');  
-    sd_stmType = std(subRTreshaped, 'omitnan');
+% get variables from logVar
+RT_all          = cell2mat(logVar(2:end,12));
+blockIndices 	= cell2mat(logVar(2:end, 2));
+figPresent      = cell2mat(logVar(2:end, 7));  
+stim_difficulty = cell2mat(logVar(2:end,5)); 
+diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; % getting min and max values of coherence
+isDifficult     = stim_difficulty==diffValues(2); 
+accuracy        = cell2mat(logVar(2:end,10));
 
 
-    %% (4) Accuracy data 
+%% (2) sort RTs into categories, store it in output variable
 
-    % overall accuracy (%)
-    Num_acc = numel(accuracy(accuracy==1)); % number of accurate trials
-    proportion_acc = Num_acc/800*100;
+% results array containing RT data
+% - per blocks
+% - per stimulus type (figure present/absent, easy/difficult)
 
-    % 4D results array containing accuracy 
-    % - per blocks
-    % - per stimulus type (figure present/absent, easy/difficult)
+subRT = nan(20, 10, 2, 2); 
+% 3rd and 4th dimension representing figure presence (1=absent, 2=present)
+% and difficulty (1=easy, 2=difficult)
 
-    subAcc = nan(20, 10, 2, 2);
+for blockIdx = 1:10
 
-    for blockIdx = 1:10
+    for fig = 0:1
 
-        for fig = 0:1
+        for diff = 0:1
 
-            for diff = 0:1
+            subRT(:, blockIdx, fig+1, diff+1) = RT_all(blockIndices==blockIdx & figPresent==fig & isDifficult==diff);
 
-                subAcc(:, blockIdx, fig+1, diff+1) = accuracy(blockIndices==blockIdx & figPresent==fig & isDifficult==diff);
+        end
+    end   
+end
 
-            end
-        end   
-    end
+%% (3) Reporting descriptve stats for RT
 
-    % get means (per blocks & stimulus type)
-    MeanAccuracy_block = mean(subAcc, 'omitnan');
+% get overall mean and SD for RT (all blocks combined 1x1)
+mean_RT = mean(subRT(:), 'omitnan'); % omit NAN values
+sd_RT = std(subRT(:), 'omitnan');
 
-    % blocks combined
-    subAccReshaped = reshape(subAcc, [200,2,2]);
-    MeanAccuracy = mean(subAccReshaped, 'omitnan');
+% get mean RT per blocks, stimulus type (4D)
+RTblockMean = mean(subRT, 1, 'omitnan');  
+RTblockSD = std(subRT, 0, 1, 'omitnan');  
+
+% first row: means, second row: SD (4D)
+RTblockMeanSD = vertcat(RTblockMean, RTblockSD);
+
+% block level removed to check stats only per stimulus type (3D)
+% get mean and SD for RT per condition
+subRTreshaped = reshape(subRT, [200, 2, 2]);  
+mean_stmType = mean(subRTreshaped, 'omitnan');  
+sd_stmType = std(subRTreshaped, 'omitnan');
 
 
-    %% (5) Plots
+%% (4) Accuracy data 
+
+% overall accuracy (%)
+Num_acc = numel(accuracy(accuracy==1)); % number of accurate trials
+proportion_acc = Num_acc/800*100;
+
+% 4D results array containing accuracy 
+% - per blocks
+% - per stimulus type (figure present/absent, easy/difficult)
+
+subAcc = nan(20, 10, 2, 2);
+
+for blockIdx = 1:10
+
+    for fig = 0:1
+
+        for diff = 0:1
+
+            subAcc(:, blockIdx, fig+1, diff+1) = accuracy(blockIndices==blockIdx & figPresent==fig & isDifficult==diff);
+
+        end
+    end   
+end
+
+% get means (per blocks & stimulus type)
+MeanAccuracy_block = mean(subAcc, 'omitnan');
+
+% blocks combined
+subAccReshaped = reshape(subAcc, [200,2,2]);
+MeanAccuracy = mean(subAccReshaped, 'omitnan');
+
+
+%% (5) Plots
+
+if plottingFlag
 
     % 1) line plot for mean RTs per blocks and stimulus type
 
@@ -165,14 +195,20 @@ function [FGoutput] = FGdata_clean(filename)
     xlabel('Stimulus types');
     ylabel('Correct responses (%)');
     
-    FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, ...
-                        'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, ...
-                        'sd_stmType', {sd_stmType}, 'accuracy', {proportion_acc}, ...
-                        'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
-
-    disp('Done!');
-
 end
+
+
+%% Output, return
+
+FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, ...
+                    'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, ...
+                    'sd_stmType', {sd_stmType}, 'accuracy', {proportion_acc}, ...
+                    'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
+
+disp('Done!');
+
+
+return
 
 % do we need anything else?
 
