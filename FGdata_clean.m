@@ -165,7 +165,10 @@ function [FGoutput] = FGdata_clean(filename)
     xlabel('Stimulus types');
     ylabel('Correct responses (%)');
     
-    FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, 'sd_stmType', {sd_stmType}, 'accuracy', {proportion_acc},'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
+    FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, ...
+                        'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, ...
+                        'sd_stmType', {sd_stmType}, 'accuracy', {proportion_acc}, ...
+                        'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
 
     disp('Done!');
 
