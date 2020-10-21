@@ -1,20 +1,31 @@
 %% %% %% %% SFG aging study - behavioral data analysis %% %% %% %%
+%
+% Function for getting all behavioral data (means and SDs for RT, accuracy)
+%
+% Only input arg should be filename, something like this: 'sub*Log.mat' where * = subject no. 
+%
+% Note: file should already be on MATLAB path!
 
 
 %% (1) Loading log file, extracting variables of interest
 
-function [FGoutput] = FGdata_clean()
+function [FGoutput] = FGdata_clean(filename)
 
-    filePath = '/home/lucab/Downloads/FG-RT-master/sampleData/sub2Log.mat';
-    load(filePath);
-
+    % find the input file
+    if exist (filename, 'file')
+        load(filename)
+    else
+        disp('Filename does not exist!')
+    end
+    
+    % get variables from logVar
     RT_all          = cell2mat(logVar(2:end,12));
     blockIndices 	= cell2mat(logVar(2:end, 2));
     figPresent      = cell2mat(logVar(2:end, 7));  
     stim_difficulty = cell2mat(logVar(2:end,5)); 
     diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; % getting min and max values of coherence
     isDifficult     = stim_difficulty==diffValues(2); 
-    accuracy        = logical(cell2mat(logVar(2:end,10)));
+    accuracy        = cell2mat(logVar(2:end,10));
 
     %% (2) sort RTs into categories, store it in output variable
 
@@ -116,7 +127,7 @@ function [FGoutput] = FGdata_clean()
 
     figure(2);
 
-    tmpData = squeeze(mean_stmType); tmpData = tmpData'; %squeeze and transpose the data so that we group primarily by easy/difficult categories
+    tmpData = squeeze(mean_stmType); tmpData = tmpData'; % squeeze and transpose the data so that we group primarily by easy/difficult categories
     b = bar(tmpData);
     set(gca,'XTickLabel', {'Easy', 'Difficult'}); % set parameters
     legend('Figure Absent', 'Figure Present');
@@ -154,10 +165,13 @@ function [FGoutput] = FGdata_clean()
     xlabel('Stimulus types');
     ylabel('Correct responses (%)');
     
-    FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, 'accuracy', {proportion_acc},'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
+    FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, 'sd_stmType', {sd_stmType}, 'accuracy', {proportion_acc},'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
 
     disp('Done!');
 
 end
 
-% what i need: subRT, mean_RT, sd_RT, RTblockMeanSD, mean_stmType, sd_stmType, proportion_acc, MeanAccuracy, MeanAccuracy_block);
+% do we need anything else?
+
+
+
