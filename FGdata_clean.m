@@ -16,6 +16,10 @@ function FGoutput = FGdata_clean(filename, plottingFlag)
 %                           % Correct response). Defaults to 1. 
 %
 % Outputs:
+%
+% ToneCompValues:       - Numeric vector with tone component values
+%
+% figCoherence:         - NUmeric vector with figure coherence values  
 % 
 % subRT:                - 4D array with block-level RT sorted by stimulus type 
 %                           [trial x block x figure x difficulty]*
@@ -47,7 +51,7 @@ function FGoutput = FGdata_clean(filename, plottingFlag)
 %                          
 %
 %
-%   * block no. [1:10]
+%  *  block no. [1:10]
 %     figure (1=absent, 2=present)
 %     difficulty (1=easy, 2=difficult)
 % 
@@ -83,6 +87,7 @@ stim_difficulty = cell2mat(logVar(2:end,5));
 diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; % getting min and max values of coherence
 isDifficult     = stim_difficulty==diffValues(2); 
 accuracy        = cell2mat(logVar(2:end,10));
+figCoherence    = [min(unique(cell2mat(logVar(2:end,6)))), max(unique(cell2mat(logVar(2:end,6))))];
 
 
 %% (2) sort RTs into categories, store it in output variable
@@ -233,14 +238,12 @@ SQmean_stmType = squeeze(mean_stmType);
 SQsd_stmType = squeeze(sd_stmType);
 SQMeanAccuracy = squeeze(MeanAccuracy);
 
-FGoutput = struct('subRT', {subRT}, 'subAcc', {subAcc}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, ...
-                    'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {SQmean_stmType}, ...
-                    'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
+FGoutput = struct('ToneCompValues', {diffValues}, 'figCoherence', {figCoherence}, 'subRT', {subRT}, ...
+                    'subAcc', {subAcc}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, ...
+                    'mean_stmType', {SQmean_stmType}, 'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
                     'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
 
 disp('Done!');
 
 
 return
-
-
