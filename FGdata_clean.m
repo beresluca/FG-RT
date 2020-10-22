@@ -7,20 +7,50 @@ function FGoutput = FGdata_clean(filename, plottingFlag)
 % from a given subject log file
 %
 % Mandatory input:
-% filename      - Char array, path of subject-level behavioral log file 
-%                  (usually in the form "sub*Log.mat" where * = subject no.).
+% filename              - Char array, path of subject-level behavioral log file 
+%                          (usually in the form "sub*Log.mat" where * = subject no.).
 %
 % Optional input:
-% plottingFlag  - Numeric or logical value, one of [0 1]. Flag for plotting
-%                   the results (0 means no plots, 1 means plots for RT and
-%                   % Correct response). Defaults to 1. 
-%
+% plottingFlag          - Numeric or logical value, one of [0 1]. Flag for plotting
+%                          the results (0 means no plots, 1 means plots for RT and
+%                           % Correct response). Defaults to 1. 
 %
 % Outputs:
+% 
+% subRT:                - 4D array with block-level RT sorted by stimulus type 
+%                           [trial x block x figure x difficulty]*
+%
+% subAcc:               - 4D array with block-level accuracy sorted by stimulus type
+%                           [trial x block x figure x difficulty]*
+%
+% mean_RT:              - Numeric value, overall mean of RT
+%
+% sd_RT:                - Numeric value, overall Standard Deviation of RT
+%
+% RTblockMeanSD:        - 4D array with block-level means (1st row of each dimension) 
+%                           and SD of RT (2nd row of each dimension)
+%                           [mean,SD x block x figure x difficulty]*
+% 
+% mean_stmType:         - 2x2 array with mean RTs for each stimulus type
+%                           [figure x difficulty]*
+% 
+% sd_stmType:           - 2x2 array with SD RTs for each stimulus type
+%                           [figure x difficulty]*
+% 
+% accuracy:             - Proportion of correct responses (%)
+% 
+% MeanAccuracy:         - 2x2 array with mean accuracy(%) for each stimulus type
+%                           [figure x difficulty]*
+% 
+% MeanAccuracy_block:   - 3D array with block-level accuracy(%) sorted by stimulus type
+%                           [block x figure x difficulty]*
+%                          
 %
 %
-% Note: file should already be on MATLAB path! (?)
-% Remek!
+%   * block no. [1:10]
+%     figure (1=absent, 2=present)
+%     difficulty (1=easy, 2=difficult)
+% 
 
 %% Check inputs
 
@@ -62,8 +92,6 @@ accuracy        = cell2mat(logVar(2:end,10));
 % - per stimulus type (figure present/absent, easy/difficult)
 
 subRT = nan(20, 10, 2, 2); 
-% 3rd and 4th dimension representing figure presence (1=absent, 2=present)
-% and difficulty (1=easy, 2=difficult)
 
 for blockIdx = 1:10
 
@@ -200,17 +228,19 @@ end
 
 %% Output, return
 
-FGoutput = struct('subRT', {subRT}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, ...
-                    'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {mean_stmType}, ...
-                    'sd_stmType', {sd_stmType}, 'accuracy', {proportion_acc}, ...
-                    'MeanAcuracy', {MeanAccuracy}, 'MeanAccuracy_block', {MeanAccuracy_block});
+SQMeanAccuracy_block = squeeze(MeanAccuracy_block);
+SQmean_stmType = squeeze(mean_stmType);
+SQsd_stmType = squeeze(sd_stmType);
+SQMeanAccuracy = squeeze(MeanAccuracy);
+
+FGoutput = struct('subRT', {subRT}, 'subAcc', {subAcc}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, ...
+                    'RTblockMeanSD', {RTblockMeanSD}, 'mean_stmType', {SQmean_stmType}, ...
+                    'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
+                    'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
 
 disp('Done!');
 
 
 return
-
-% do we need anything else?
-
 
 
