@@ -28,7 +28,9 @@ end
 
 % First preallocate all result variables - we would like to have variables
 % capable of holding all subject-level results
-FGall = struct(length(subjects), 1);
+FGall = struct('subRT', zeros(20,10,2,2), 'subAcc', zeros(20,10,2,2), ...
+    'ToneCompValues', zeros(1, 2), ...  % needs to continued...
+% FGall = struct(length(subjects), 1);
 
 % loop
 for s = 1:length(subjects)
