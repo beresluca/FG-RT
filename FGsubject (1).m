@@ -1,13 +1,17 @@
 % get all subject files --> to later perform stats
 % should look like an N dimensional struct with each layer of subject data
 
-searchDir = '/C:/Users/Luca/**/SFG_sample/';
-subjects = 2:5; % right now works on only a subset of subjects
+searchDir = '/home/lucab/Downloads/FG-RT-master/SFG_sample';
+%searchDir = '/C:/Users/Luca/**/SFG_sample/';
+
+subjects = ([2:5 101 103:105]); % right now works on only a predefined subset of subjects, 
+                                % need to correct for errors when subject no. is missing
+                                % (??)
 
 %% Find the files somehow - use "dir" perhaps
 filePaths = strings(length(subjects), 1);  % preallocate
 for s = subjects
-    searchDir; % not sure how to use this for the next line of code
+    searchDir; % not sure how to use this for the next line of code ("too many input arg for dir")
     SubLogFiles = dir(['**/sub', num2str(s), 'Log.mat']);
     %%%%%%%%%%
     % here make sure somehow that only one result was returned by "dir"
@@ -39,11 +43,4 @@ for s = subjects
     FGall(s) = FGdata_clean(filePaths(s), 0);
 end
 
-% for i = 1
-%     
-%     baseFileName = SubLogFiles(i).name;
-%     fullFileName = fullfile(SubLogFiles(i).folder, baseFileName);
-%     FG_all = FGdata_clean(baseFileName, 0);
-%     
-% end
 
