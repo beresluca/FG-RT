@@ -88,6 +88,7 @@ diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; 
 isDifficult     = stim_difficulty==diffValues(2); 
 accuracy        = cell2mat(logVar(2:end,10));
 figCoherence    = [min(unique(cell2mat(logVar(2:end,6)))), max(unique(cell2mat(logVar(2:end,6))))];
+subNum          = cell2mat(logVar(2,1));
 
 
 %% (2) sort RTs into categories, store it in output variable
@@ -238,7 +239,7 @@ SQmean_stmType = squeeze(mean_stmType);
 SQsd_stmType = squeeze(sd_stmType);
 SQMeanAccuracy = squeeze(MeanAccuracy);
 
-FGoutput = struct('ToneCompValues', {diffValues}, 'figCoherence', {figCoherence}, 'subRT', {subRT}, ...
+FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'figCoherence', {figCoherence}, 'subRT', {subRT}, ...
                     'subAcc', {subAcc}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, ...
                     'mean_stmType', {SQmean_stmType}, 'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
                     'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
@@ -247,3 +248,6 @@ disp('Done!');
 
 
 return
+
+
+
