@@ -1,33 +1,7 @@
-% 
-% tmp11 = nan(47, 10);
-% for i = 1:47
-%     tmp11(i,:) = FGall(i).RTblockMeanSD(1,:,1,1);
-% end
-% 
-% 
-% 
-% % [P,ANOVATAB,STATS] = anova1(tmp11);
-% % [COMPARISON,MEANS,H] = multcompare(STATS);
-% 
-% %P = anovan(FGall(1).subRT
-% 
-% %[P, STATS] = anovan(FGall(1).subRT(:,:,1,1), FGall(1).subAcc(:,:,1,1));
-% 
-% young = nan(19,1);
-% for k = 1:19
-%     young(k,:) = FGall(k).mean_RT;
-% end
-% 
-% old = nan(28,1);
-% for j = 20:47
-%     old(j) = FGall(j).mean_RT;
-% end
-% 
-% old = old(20:47);
-
+%% Define the basics
 
 searchDir = '/home/lucab/Downloads/FG-RT-master/SFG_all/';
-subjects = 2:12;
+subjects = 2:132;
 
 %% Find the files in given search directory
 
@@ -53,8 +27,9 @@ end
 
 filePathsRe = reshape(filePaths, [length(filePaths),1]);
 
-%allDataS = struct([]);
-%allDataS = struct('logVar1', cell(1,1), 'logVar2', cell(1,1)); 
+%% Load files into a cell array
+
+allDataS = [];
 
 for i = 1:length(filePathsRe)
     
@@ -64,19 +39,20 @@ for i = 1:length(filePathsRe)
    
 end
 
-% get variables from logVar 
+allTrials = length(filePathsRe)*800;
 
-RT_sub = zeros(800,1);
-%RT_all = zeros(8000,1);
+%% Get variables from logVar for all subjects
+
 RT_all = [];
 blockIdx = [];
 figP = [];
 isDiff = [];
 subNo = [];
+isOld = [];
 
-data4anova = zeros(8000,5);
+data4anova = zeros(allTrials,6);
 
-for k = 1:10
+for k = 1:length(filePathsRe)
         
     log = allData{k,:};
     
@@ -87,26 +63,33 @@ for k = 1:10
     diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; % getting min and max values of coherence
     isDifficult     = stim_difficulty==diffValues(2);
     subNum          = cell2mat(log(2:end,1));
+    is_old          = logical(subNum > 100);
     
-    %RT_all = vertcat(RT_sub);
     RT_all = [RT_all; RT_sub];
     blockIdx = [blockIdx; blockIndices];
     figP = [figP; figPresent];
     isDiff = [isDiff; isDifficult];
     subNo = [subNo; subNum];
-    
+    isOld = [isOld; is_old];
+      
     %RT_all((k-1)*800+1 : k*800, 1) = RT_sub;
     
-    data4anova = horzcat(subNo, RT_all, blockIdx, figP, isDiff);
-    
+    data4anova = horzcat(subNo, RT_all, blockIdx, figP, isDiff, isOld);  
      
 end
+              
 
+%% ANOVA
 
-
-
-
-
+[Pvalues, T, stats] = anovan(RT_all, {isOld, figP, isDiff, subNo}, 'model', 2, ...
+                   'random', 4, 'varnames', {'Age', 'Figure', 'Diff', 'Sub'});           
+               
+% getting NaN for P values for 'isOld' and 'subNo', works without subNo as a random effect..
+%
+% we have repeated measures --> 'ranova' or GLMM?
+%
+               
+disp('Done!');               
 
 
 
