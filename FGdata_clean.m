@@ -88,7 +88,9 @@ diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; 
 isDifficult     = stim_difficulty==diffValues(2); 
 accuracy        = cell2mat(logVar(2:end,10));
 figCoherence    = [min(unique(cell2mat(logVar(2:end,6)))), max(unique(cell2mat(logVar(2:end,6))))];
+toneCompdiff    = diffValues(2)-diffValues(1);
 subNum          = cell2mat(logVar(2,1));
+buttonResp      = cell2mat(logVar(2:end,11));
 
 
 %% (2) sort RTs into categories, store it in output variable
@@ -161,6 +163,37 @@ MeanAccuracy_block = mean(subAcc, 'omitnan');
 % blocks combined
 subAccReshaped = reshape(subAcc, [200,2,2]);
 MeanAccuracy = mean(subAccReshaped, 'omitnan');
+
+%% HITrate FArate
+
+hit_miss = strings(800,1);
+
+hit_miss(figPresent==1 & buttonResp==1) = 'Hit';
+hit_miss(figPresent==1 & buttonResp==0) = 'Miss';
+hit_miss(figPresent==0 & buttonResp==0) = 'CR';
+hit_miss(figPresent==0 & buttonResp==1) = 'FA';
+
+hitrate    = sum(hit_miss == 'Hit') / 800 * 100;
+missrate   = sum(hit_miss == 'Miss') / 800 * 100;
+FArate     = sum(hit_miss == 'FA') / 800 * 100;
+CRrate     = sum(hit_miss == 'CR') / 800 * 100;
+
+dprime = hitrate-FArate;
+
+hits = strings(400,2);
+for diff = 0:1
+   
+    hits(:, diff+1) = hit_miss(isDifficult == diff);
+    
+end
+
+hitrateEasy = sum(hits(:,1) == 'Hit') / 400 * 100; % note the 400! (50% of the trials are either easy or difficult) 
+hitrateDiff = sum(hits(:,2) == 'Hit') / 400 * 100;
+FArateEasy = sum(hits(:,1) == 'FA') / 400 * 100;
+FArateDiff = sum(hits(:,2) == 'FA') / 400 * 100;
+
+Hit_stmType = vertcat(hitrateEasy, hitrateDiff);
+FA_stmType = vertcat(FArateEasy, FArateDiff);
 
 
 %% (5) Plots
@@ -239,9 +272,12 @@ SQmean_stmType = squeeze(mean_stmType);
 SQsd_stmType = squeeze(sd_stmType);
 SQMeanAccuracy = squeeze(MeanAccuracy);
 
-FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'figCoherence', {figCoherence}, 'subRT', {subRT}, ...
-                    'subAcc', {subAcc}, 'mean_RT', {mean_RT}, 'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, ...
+FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'ToneCompdiff', {toneCompdiff}, ...
+                    'figCoherence', {figCoherence}, 'subRT', {subRT}, 'subAcc', {subAcc}, 'mean_RT', {mean_RT},...
+                    'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, ...
                     'mean_stmType', {SQmean_stmType}, 'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
+                    'hitrate_all', {hitrate}, 'FArate_all', {FArate}, 'dprime_all', {dprime}, ...
+                    'Hit_stmType', {Hit_stmType}, 'FA_stmType', {FA_stmType}, ...
                     'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
 
 disp('Done!');
