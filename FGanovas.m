@@ -4,7 +4,7 @@
 clear;
 
 searchDir = '/home/lucab/Downloads/FG-RT-master/SFG_all/';
-subjects = 100:132;
+subjects = 2:132;
 
 %% Find the files in given search directory
 
@@ -61,15 +61,14 @@ figCoh = [];
 toneCompDiff = [];
 hitMiss = [];
 Accuracy = [];
+trialNo = [];
+primaryGrouping = zeros(allTrials, 1);
 
 % contains subject numbers with impaired hearing
 hear_imp = ([103,108,109,110,111,113,115,116,119,120,121,125,127,128,129,130,132]); 
-isimpaired = zeros(800,1);
 isImpaired = [];
 
 hit_miss = strings(800,1);
-
-dataTab = zeros(allTrials,9);
 
 for k = 1:length(filePathsRe)
         
@@ -87,12 +86,14 @@ for k = 1:length(filePathsRe)
         is_old          = logical(subNum > 100);
         fig_coh         = cell2mat(log(2:end,6));
         buttonResp      = cell2mat(log(2:end,11));
+        trialNum        = cell2mat(log(2:end,3));
 
         % 1 vector containing hit/miss/FA/CR values
         hit_miss(figPresent==1 & buttonResp==1) = 'HIT';
         hit_miss(figPresent==1 & buttonResp==0) = 'MISS';
         hit_miss(figPresent==0 & buttonResp==0) = 'CR';
         hit_miss(figPresent==0 & buttonResp==1) = 'FA';
+        
 
         % concatenate subject level data
         RT_all       = [RT_all; RT_sub];
@@ -105,38 +106,51 @@ for k = 1:length(filePathsRe)
         toneCompDiff = [toneCompdiff; toneCompDiff];
         hitMiss      = [hitMiss; hit_miss];
         Accuracy     = [Accuracy; accuracy];
-        isImpaired   = [isImpaired; isimpaired];
+        trialNo      = [trialNo; trialNum];
 
-        % something like this for grouping by hearing (?)
-        if ismember(subNo, hear_imp)
-            isimpaired = 1;
-        end 
-
-        % 
-        dataTab = table(subNo, RT_all, blockIdx, figCoh, figP, isDiff, isOld, toneCompDiff, hitMiss);     
+        % something like this for grouping by hearing (?)        
+        tmp = ismember(subNo, hear_imp);
+        isImpaired = double(tmp);
+        
+        % grouping variable for the 3 groups 
+        % 1 = young, 2 = old/good hearing, 3 = old/impaired hearing
+        primaryGrouping(isImpaired==0 & isOld==0) = 1;
+        primaryGrouping(isImpaired==0 & isOld==1) = 2;
+        primaryGrouping(isImpaired==1 & isOld==1) = 3;    
    
 end
+
+%primaryGroupingRe = reshape(primaryGrouping, [allTrials,1]);
+
             
-%% (1) ANOVA for accuracy for 3 groups (young/old-impaired/old-good)
+%% (1) ANOVA on accuracy for 3 groups (young/old-impaired/old-good)
 
-%[P, T, stats] = anovan(accuracy, {isOld}, 'model', 1, 'varnames', {'Age'});
-% accuracy contains NaN values --> anovan returns error 
+% one-way anova 
+[P0, T0, stats0] = anova1(Accuracy, primaryGrouping);
+% do we need trial level for this analysis or should I use the collapsed
+% data (from FGsubject_v2)?
 
+comp1 = multcompare(stats0, 'ctype', 'bonferroni');  
 
-%% (2) RT ANOVA with subject number as a random factor
+[P1, T1, stats1] = anovan(Accuracy, {isImpaired, isOld}, 'model', 1, ...
+                   'display', 0, 'varnames', {'Hearing', 'Age'});             
+%                
+%save('anova1.csv', 'T1');
+               
+%% (2) ANOVA on RT with subject number as a random factor
 
 % without block index
 [P2, T2, stats2] = anovan(RT_all, {isDiff, figP, subNo}, 'model', 2, ...
-                  'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub'});   
+                 'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub'});   
               
 % saving 
-save('anova2.csv', 'T2'); 
+%save('anova2.csv', 'T2'); 
 
 % with block index              
 [P3, T3, stats3] = anovan(RT_all, {isDiff, figP, subNo, blockIdx}, 'model', 2, ...
                    'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub', 'Block'}); 
                
-save('anova3.csv', 'T3');               
+%save('anova3.csv', 'T3');               
                
 %              
 % # and NaN values are returned because there are missing factor 
@@ -148,23 +162,24 @@ save('anova3.csv', 'T3');
 
 
 
-%% (2) RT ANOVA, added tone component difference (difficulty values) as a factor ??
+%% (2) ANOVA on accuracy, added tone component difference as a continuous factor ??
 
-[P4, T4, stats4] = anovan(RT_all, {toneCompDiff}, 'model', 1, 'continuous', 1, ...
+[P4, T4, stats4] = anovan(Accuracy, {toneCompDiff}, 'model', 1, 'continuous', 1, ...
                    'display', 0, 'varnames', {'Tone component'});
 
 %[comp, Means] = multcompare(stats3);
 
-save('anova4.csv', 'T4');
+%save('anova4.csv', 'T4');
 
 
 %% (3) ANOVA on hitrate, FA rate
  
 % grouping (young, old-impaired, old-good) on hitrate, FA rate ???
 
-%[P5, T5, stats5] = anovan(hitMiss,
+%[P5, T5, stats5] = anovan(hitMiss, {primaryGrouping}, 'model', 1, ...
+%                   'display', 0, 'varnames', {'primary grouping'});
 
-save('anova5.csv', 'T5');
+%save('anova5.csv', 'T5');
 
 
 
