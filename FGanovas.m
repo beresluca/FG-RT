@@ -130,13 +130,13 @@ end
                   'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub'});   
               
 % saving 
-save('anova2.csv', 'T1'); 
+save('anova2.csv', 'T2'); 
 
 % with block index              
 [P3, T3, stats3] = anovan(RT_all, {isDiff, figP, subNo, blockIdx}, 'model', 2, ...
                    'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub', 'Block'}); 
                
-save('anova3.csv', 'T1');               
+save('anova3.csv', 'T3');               
                
 %              
 % # and NaN values are returned because there are missing factor 
@@ -155,7 +155,7 @@ save('anova3.csv', 'T1');
 
 %[comp, Means] = multcompare(stats3);
 
-save('anova4.csv', 'T3');
+save('anova4.csv', 'T4');
 
 
 %% (3) ANOVA on hitrate, FA rate
