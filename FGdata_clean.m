@@ -137,7 +137,7 @@ sd_stmType = std(subRTreshaped, 'omitnan');
 
 % overall accuracy (%)
 Num_acc = numel(accuracy(accuracy==1)); % number of accurate trials
-proportion_acc = Num_acc/800*100;
+proportion_acc = Num_acc/800;
 
 % 4D results array containing accuracy 
 % - per blocks
@@ -168,15 +168,15 @@ MeanAccuracy = mean(subAccReshaped, 'omitnan');
 
 hit_miss = strings(800,1);
 
-hit_miss(figPresent==1 & buttonResp==1) = 'Hit';
-hit_miss(figPresent==1 & buttonResp==0) = 'Miss';
+hit_miss(figPresent==1 & buttonResp==1) = 'HIT';
+hit_miss(figPresent==1 & buttonResp==0) = 'MISS';
 hit_miss(figPresent==0 & buttonResp==0) = 'CR';
 hit_miss(figPresent==0 & buttonResp==1) = 'FA';
 
-hitrate    = sum(hit_miss == 'Hit') / 800 * 100;
-missrate   = sum(hit_miss == 'Miss') / 800 * 100;
-FArate     = sum(hit_miss == 'FA') / 800 * 100;
-CRrate     = sum(hit_miss == 'CR') / 800 * 100;
+hitrate    = sum(hit_miss == 'HIT') / 400; % fig is present on 50% of trials, hit is calculated on 50% as well
+missrate   = sum(hit_miss == 'MISS') / 400;
+FArate     = sum(hit_miss == 'FA') / 400;
+CRrate     = sum(hit_miss == 'CR') / 400;
 
 dprime = hitrate-FArate;
 
@@ -187,13 +187,51 @@ for diff = 0:1
     
 end
 
-hitrateEasy = sum(hits(:,1) == 'Hit') / 400 * 100; % note the 400! (50% of the trials are either easy or difficult) 
-hitrateDiff = sum(hits(:,2) == 'Hit') / 400 * 100;
-FArateEasy = sum(hits(:,1) == 'FA') / 400 * 100;
-FArateDiff = sum(hits(:,2) == 'FA') / 400 * 100;
+hitrateEasy = sum(hits(:,1) == 'HIT') / 200; % easy/diff is also 50-50% !
+hitrateDiff = sum(hits(:,2) == 'HIT') / 200;
+FArateEasy = sum(hits(:,1) == 'FA') / 200;
+FArateDiff = sum(hits(:,2) == 'FA') / 200;
 
 Hit_stmType = vertcat(hitrateEasy, hitrateDiff);
 FA_stmType = vertcat(FArateEasy, FArateDiff);
+
+
+%% RT means grouped by HIT / FA and difficulty
+
+subRTdup1 = repmat(subRTreshaped,1);
+subRTdup1(buttonResp==0) = nan;
+RThitEasy = mean(subRTdup1(:,2,1), 'omitnan');
+
+subRTdup2 = repmat(subRTreshaped,1);
+subRTdup2(buttonResp==0) = nan;
+RThitDiff = mean(subRTdup2(:,2,2), 'omitnan');
+
+subRTdup3 = repmat(subRTreshaped,1);
+subRTdup3(buttonResp==0) = nan;
+RTFAEasy = mean(subRTdup3(:,1,1), 'omitnan');
+
+subRTdup4 = repmat(subRTreshaped,1);
+subRTdup4(buttonResp==0) = nan;
+RTFADiff = mean(subRTdup4(:,1,2), 'omitnan');
+
+disp([newline num2str(RThitEasy), newline num2str(RThitDiff), ...
+    newline num2str(RTFAEasy), newline num2str(RTFADiff)]);
+
+% sprintf('%s', RThitEasy, ...\n
+%       RThitDiff, ...\n
+%       RTFAEasy,...\n
+%       RTFADiff);
+
+
+
+
+% accuracyCheck = hitrate + CRrate;
+% if isequal(accuracyCheck, accuracy)
+%     disp('Accuracy check completed, hit rate + CR rate = accuracy');
+% else
+%     disp('Accuracy check failed, check for errors!!!');
+% end
+
 
 
 %% (5) Plots
@@ -280,7 +318,7 @@ FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'ToneCo
                     'Hit_stmType', {Hit_stmType}, 'FA_stmType', {FA_stmType}, ...
                     'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
 
-disp('Done!');
+disp([newline 'Done!']);
 
 
 return
