@@ -198,39 +198,19 @@ FA_stmType = vertcat(FArateEasy, FArateDiff);
 
 %% RT means grouped by HIT / FA and difficulty
 
-subRTdup1 = repmat(subRTreshaped,1);
-subRTdup1(buttonResp==0) = nan;
-RThitEasy = mean(subRTdup1(:,2,1), 'omitnan');
+subRTdup = repmat(subRTreshaped,1);
+subRTdup(buttonResp==0) = nan;
 
-subRTdup2 = repmat(subRTreshaped,1);
-subRTdup2(buttonResp==0) = nan;
-RThitDiff = mean(subRTdup2(:,2,2), 'omitnan');
+RThitEasy = mean(subRTdup(:,2,1), 'omitnan');
+RThitDiff = mean(subRTdup(:,2,2), 'omitnan');
+RTFAEasy = mean(subRTdup(:,1,1), 'omitnan');
+RTFADiff = mean(subRTdup(:,1,2), 'omitnan');
 
-subRTdup3 = repmat(subRTreshaped,1);
-subRTdup3(buttonResp==0) = nan;
-RTFAEasy = mean(subRTdup3(:,1,1), 'omitnan');
+RThit_stmType = vertcat(RThitEasy, RThitDiff);
+RTFA_stmType =  vertcat(RTFAEasy, RTFADiff);
 
-subRTdup4 = repmat(subRTreshaped,1);
-subRTdup4(buttonResp==0) = nan;
-RTFADiff = mean(subRTdup4(:,1,2), 'omitnan');
-
-disp([newline num2str(RThitEasy), newline num2str(RThitDiff), ...
-    newline num2str(RTFAEasy), newline num2str(RTFADiff)]);
-
-% sprintf('%s', RThitEasy, ...\n
-%       RThitDiff, ...\n
-%       RTFAEasy,...\n
-%       RTFADiff);
-
-
-
-
-% accuracyCheck = hitrate + CRrate;
-% if isequal(accuracyCheck, accuracy)
-%     disp('Accuracy check completed, hit rate + CR rate = accuracy');
-% else
-%     disp('Accuracy check failed, check for errors!!!');
-% end
+% disp([newline num2str(RThitEasy), newline num2str(RThitDiff), ...
+%     newline num2str(RTFAEasy), newline num2str(RTFADiff)]);
 
 
 
@@ -316,6 +296,7 @@ FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'ToneCo
                     'mean_stmType', {SQmean_stmType}, 'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
                     'hitrate_all', {hitrate}, 'FArate_all', {FArate}, 'dprime_all', {dprime}, ...
                     'Hit_stmType', {Hit_stmType}, 'FA_stmType', {FA_stmType}, ...
+                    'RThit_stmType', {RThit_stmType}, 'RTFA_stmType', {RTFA_stmType}, ... 
                     'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
 
 disp([newline 'Done!']);
