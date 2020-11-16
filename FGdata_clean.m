@@ -196,6 +196,10 @@ Hit_stmType = vertcat(hitrateEasy, hitrateDiff);
 FA_stmType = vertcat(FArateEasy, FArateDiff);
 
 
+DprimeEasy = hitrateEasy - FArateEasy;
+DprimeDiff = hitrateDiff - FArateDiff;
+
+
 %% RT means grouped by HIT / FA and difficulty
 
 subRTdup = repmat(subRTreshaped,1);
@@ -208,6 +212,7 @@ RTFADiff = mean(subRTdup(:,1,2), 'omitnan');
 
 RThit_stmType = vertcat(RThitEasy, RThitDiff);
 RTFA_stmType =  vertcat(RTFAEasy, RTFADiff);
+
 
 % disp([newline num2str(RThitEasy), newline num2str(RThitDiff), ...
 %     newline num2str(RTFAEasy), newline num2str(RTFADiff)]);
@@ -295,8 +300,9 @@ FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'ToneCo
                     'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, ...
                     'mean_stmType', {SQmean_stmType}, 'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
                     'hitrate_all', {hitrate}, 'FArate_all', {FArate}, 'dprime_all', {dprime}, ...
-                    'Hit_stmType', {Hit_stmType}, 'FA_stmType', {FA_stmType}, ...
-                    'RThit_stmType', {RThit_stmType}, 'RTFA_stmType', {RTFA_stmType}, ... 
+                    'hitrateEasy', {hitrateEasy}, 'hitrateDiff', {hitrateDiff}, 'FArateEasy', {FArateEasy}, ...
+                    'FArateDiff', {FArateDiff}, 'DprimeEasy', {DprimeEasy}, 'DprimeDiff', {DprimeDiff}, ...
+                    'RThitEasy', {RThitEasy}, 'RThitDiff', {RThitDiff}, 'RTFAEasy', {RTFAEasy}, 'RTFADiff', {RTFADiff}, ... 
                     'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
 
 disp([newline 'Done!']);
