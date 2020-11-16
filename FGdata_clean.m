@@ -87,7 +87,7 @@ stim_difficulty = cell2mat(logVar(2:end,5));
 diffValues      = [min(unique(stim_difficulty)), max(unique(stim_difficulty))]; % getting min and max values of coherence
 isDifficult     = stim_difficulty==diffValues(2); 
 accuracy        = cell2mat(logVar(2:end,10));
-figCoherence    = [min(unique(cell2mat(logVar(2:end,6)))), max(unique(cell2mat(logVar(2:end,6))))];
+figCoherence    = max(unique(cell2mat(logVar(2:end,6))));
 toneCompdiff    = diffValues(2)-diffValues(1);
 subNum          = cell2mat(logVar(2,1));
 buttonResp      = cell2mat(logVar(2:end,11));
