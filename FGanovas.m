@@ -130,26 +130,39 @@ end
 % do we need trial level for this analysis or should I use the collapsed
 % data (from FGsubject_v2)?
 
-comp1 = multcompare(stats0, 'ctype', 'bonferroni');  
+comp1 = multcompare(stats0);
+comp2 = multcompare(stats0, 'ctype', 'bonferroni');  
 
 [P1, T1, stats1] = anovan(Accuracy, {isImpaired, isOld}, 'model', 1, ...
                    'display', 0, 'varnames', {'Hearing', 'Age'});             
-%                
+
+disp('done with (1)');
 %save('anova1.csv', 'T1');
+
+%% (2) ANOVA on RT for the 3 groups
+
+[P2, T2, stats2] = anova1(RT_all, primaryGrouping, 0);
+
+comp3 = multcompare(stats2);
+comp4 = multcompare(stats2, 'ctype', 'bonferroni'); % corrected post hoc
+
+disp('done with (2)');
                
-%% (2) ANOVA on RT with subject number as a random factor
+%% (3) ANOVA on RT with subject number as a random factor
 
 % without block index
-[P2, T2, stats2] = anovan(RT_all, {isDiff, figP, subNo}, 'model', 2, ...
+[P3, T3, stats3] = anovan(RT_all, {isDiff, figP, subNo}, 'model', 2, ...
                  'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub'});   
-              
+
+disp('done with (3)');
 % saving 
 %save('anova2.csv', 'T2'); 
 
 % with block index              
-[P3, T3, stats3] = anovan(RT_all, {isDiff, figP, subNo, blockIdx}, 'model', 2, ...
+[P3b, T3b, stats3b] = anovan(RT_all, {isDiff, figP, subNo, blockIdx}, 'model', 2, ...
                    'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub', 'Block'}); 
-               
+
+disp('done with (3b)');               
 %save('anova3.csv', 'T3');               
                
 %              
@@ -162,23 +175,26 @@ comp1 = multcompare(stats0, 'ctype', 'bonferroni');
 
 
 
-%% (2) ANOVA on accuracy, added tone component difference as a continuous factor ??
+%% (4) ANOVA on accuracy, added tone component difference as a continuous factor ??
 
-[P4, T4, stats4] = anovan(Accuracy, {toneCompDiff}, 'model', 1, 'continuous', 1, ...
-                   'display', 0, 'varnames', {'Tone component'});
+% [P4, T4, stats4] = anovan(Accuracy, {toneCompDiff}, 'model', 1, 'continuous', 1, ...
+%                    'display', 0, 'varnames', {'Tone component'});
 
-%[comp, Means] = multcompare(stats3);
+%[comp, Means] = multcompare(stats4)
 
+%disp('done with (4)');
 %save('anova4.csv', 'T4');
 
 
-%% (3) ANOVA on hitrate, FA rate
+%% (5) ANOVA on hitrate, FA rate
  
 % grouping (young, old-impaired, old-good) on hitrate, FA rate ???
 
 %[P5, T5, stats5] = anovan(hitMiss, {primaryGrouping}, 'model', 1, ...
 %                   'display', 0, 'varnames', {'primary grouping'});
 
+
+%disp('done with (5)');
 %save('anova5.csv', 'T5');
 
 
@@ -200,7 +216,3 @@ disp('Done, saved!');
 
 %%%%% hearing good %%%%%
 % 101,104,105,106,107,112,114,117,118,123,124,126,131
-
-
-
-
