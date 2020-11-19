@@ -124,6 +124,7 @@ end
 
             
 %% (1) ANOVA on accuracy for 3 groups (young/old-impaired/old-good)
+% where Accuracy is a logical value (?)
 
 % one-way anova 
 [P0, T0, stats0] = anova1(Accuracy, primaryGrouping);
@@ -139,6 +140,12 @@ comp2 = multcompare(stats0, 'ctype', 'bonferroni');
 disp('done with (1)');
 %save('anova1.csv', 'T1');
 
+
+[P1b, T1b, stats1b] = anovan(Accuracy, {isDiff, figP, subNo}, 'model', 2, ...
+                       'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub'});
+                   
+disp('done with (1b)');                   
+
 %% (2) ANOVA on RT for the 3 groups
 
 [P2, T2, stats2] = anova1(RT_all, primaryGrouping, 0);
@@ -150,7 +157,7 @@ disp('done with (2)');
                
 %% (3) ANOVA on RT with subject number as a random factor
 
-% without block index
+without block index
 [P3, T3, stats3] = anovan(RT_all, {isDiff, figP, subNo}, 'model', 2, ...
                  'random', 3, 'display', 0, 'varnames', {'Diff', 'Figure', 'Sub'});   
 
@@ -190,11 +197,11 @@ disp('done with (3b)');
  
 % grouping (young, old-impaired, old-good) on hitrate, FA rate ???
 
-%[P5, T5, stats5] = anovan(hitMiss, {primaryGrouping}, 'model', 1, ...
+% [P5, T5, stats5] = anovan(hitMiss, {primaryGrouping}, 'model', 1, ...
 %                   'display', 0, 'varnames', {'primary grouping'});
-
-
-%disp('done with (5)');
+% 
+% 
+% disp('done with (5)');
 %save('anova5.csv', 'T5');
 
 
@@ -216,3 +223,6 @@ disp('Done, saved!');
 
 %%%%% hearing good %%%%%
 % 101,104,105,106,107,112,114,117,118,123,124,126,131
+
+
+
