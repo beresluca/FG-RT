@@ -133,6 +133,17 @@ mean_stmType = mean(subRTreshaped, 'omitnan');
 sd_stmType = std(subRTreshaped, 'omitnan');
 
 
+subRTtemp = zeros(400,2);
+
+for diff = 0:1
+   subRTtemp(:, diff+1) = RT_all(isDifficult==diff); 
+end
+
+RTeasy = mean(subRTtemp(:,1), 'omitnan');
+RTdiff = mean(subRTtemp(:,2), 'omitnan');
+
+
+
 %% (4) Accuracy data 
 
 % overall accuracy (%)
@@ -297,7 +308,7 @@ SQMeanAccuracy = squeeze(MeanAccuracy);
 
 FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'ToneCompdiff', {toneCompdiff}, ...
                     'figCoherence', {figCoherence}, 'subRT', {subRT}, 'subAcc', {subAcc}, 'mean_RT', {mean_RT},...
-                    'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, ...
+                    'sd_RT', {sd_RT}, 'RTblockMeanSD', {RTblockMeanSD}, 'RTeasy', {RTeasy}, 'RTdiff', {RTdiff}, ...
                     'mean_stmType', {SQmean_stmType}, 'sd_stmType', {SQsd_stmType}, 'accuracy', {proportion_acc}, ...
                     'hitrate_all', {hitrate}, 'FArate_all', {FArate}, 'dprime_all', {dprime}, ...
                     'hitrateEasy', {hitrateEasy}, 'hitrateDiff', {hitrateDiff}, 'FArateEasy', {FArateEasy}, ...
