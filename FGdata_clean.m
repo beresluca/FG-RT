@@ -175,6 +175,13 @@ MeanAccuracy_block = mean(subAcc, 'omitnan');
 subAccReshaped = reshape(subAcc, [200,2,2]);
 MeanAccuracy = mean(subAccReshaped, 'omitnan');
 
+% means for easy/difficult
+acc_easy = mean(subAccReshaped(:,:,1), 'omitnan');
+accuracy_easy = mean(acc_easy);
+acc_diff = mean(subAccReshaped(:,:,2), 'omitnan');
+accuracy_diff = mean(acc_diff);
+
+
 %% HITrate FArate
 
 hit_miss = strings(800,1);
@@ -314,7 +321,8 @@ FGoutput = struct('subNumber', {subNum}, 'ToneCompValues', {diffValues}, 'ToneCo
                     'hitrateEasy', {hitrateEasy}, 'hitrateDiff', {hitrateDiff}, 'FArateEasy', {FArateEasy}, ...
                     'FArateDiff', {FArateDiff}, 'DprimeEasy', {DprimeEasy}, 'DprimeDiff', {DprimeDiff}, ...
                     'RThitEasy', {RThitEasy}, 'RThitDiff', {RThitDiff}, 'RTFAEasy', {RTFAEasy}, 'RTFADiff', {RTFADiff}, ... 
-                    'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block});
+                    'MeanAccuracy', {SQMeanAccuracy}, 'MeanAccuracy_block', {SQMeanAccuracy_block},...
+                    'accuracy_easy', {accuracy_easy}, 'accuracy_diff', {accuracy_diff});
 
 disp([newline 'Done!']);
 
