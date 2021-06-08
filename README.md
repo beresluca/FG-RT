@@ -1,6 +1,7 @@
 # FG-RT
-RT data 
+FG Aging 
 
 
-hey there, 
-this is commit number1
+Simple code for processing RT data for FG Aging experiment.
+
+Sample data included.
